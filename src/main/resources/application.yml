@@ -1,0 +1,26 @@
+spring:
+  docker:
+    compose:
+      file: compose.yaml
+  application:
+    name: repair-service-backend
+  liquibase:
+    enabled: true
+    change-log: db/changelog/master.yaml
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/service-db
+    username: richard
+    password: 5565
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+
+
+

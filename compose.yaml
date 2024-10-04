@@ -1,0 +1,9 @@
+services:
+  postgres:
+    image: 'postgres:latest'
+    environment:
+      - POSTGRES_DB=service-db
+      - POSTGRES_PASSWORD=5565
+      - POSTGRES_USER=richard
+    ports:
+      - 5432:5432
