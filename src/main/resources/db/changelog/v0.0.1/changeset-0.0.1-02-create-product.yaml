@@ -1,22 +1,22 @@
 databaseChangeLog:
   - changeSet:
-      id: maintain uniqueness name of Person
+      id: create product catalogue
       author: Rishat Imangulov
       context: developing
-      comment: maintain uniqueness name of Person
+      comment: create product catalogue.
       changes:
         # PRODUCT CATEGORIES
         - createTable:
-            schemaName: product_schema  # Specify the schema
+            schemaName: product_schema
             tableName: product_categories
             columns:
               - column:
                   name: id
-                  type: BIGINT
-                  autoIncrement: true
+                  type: UUID
                   constraints:
                     primaryKey: true
                     nullable: false
+                  defaultValueComputed: gen_random_uuid()
               - column:
                   name: name
                   type: VARCHAR(255)
@@ -24,7 +24,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: parent_id
-                  type: BIGINT
+                  type: UUID
                   constraints:
                     nullable: true
         - addForeignKeyConstraint:
@@ -44,11 +44,11 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: BIGINT
-                  autoIncrement: true
+                  type: UUID
                   constraints:
                     primaryKey: true
                     nullable: false
+                  defaultValueComputed: gen_random_uuid()
               - column:
                   name: name
                   type: VARCHAR(255)
@@ -61,7 +61,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: category_id
-                  type: BIGINT
+                  type: UUID
                   constraints:
                     nullable: false
         - addForeignKeyConstraint:
@@ -81,11 +81,11 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: BIGINT
-                  autoIncrement: true
+                  type: UUID
                   constraints:
                     primaryKey: true
                     nullable: false
+                  defaultValueComputed: gen_random_uuid()
               - column:
                   name: image_path
                   type: VARCHAR(255)
@@ -93,7 +93,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: product_id
-                  type: BIGINT
+                  type: UUID
                   constraints:
                     nullable: false
         - addForeignKeyConstraint:

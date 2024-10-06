@@ -14,11 +14,11 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: bigint
-                  autoIncrement: true
+                  type: UUID
                   constraints:
                     primaryKey: true
                     nullable: false
+                  defaultValueComputed: gen_random_uuid()
               - column:
                   name: title
                   type: varchar(64)
@@ -38,11 +38,11 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: bigint
-                  autoIncrement: true
+                  type: UUID
                   constraints:
                     primaryKey: true
                     nullable: false
+                  defaultValueComputed: gen_random_uuid()
               - column:
                   name: title
                   type: varchar(64)
@@ -62,11 +62,11 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: bigint
-                  autoIncrement: true
+                  type: UUID
                   constraints:
                     primaryKey: true
                     nullable: false
+                  defaultValueComputed: gen_random_uuid()
               - column:
                   name: name
                   type: varchar(255)
@@ -80,7 +80,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: advertising
-                  type: bigint
+                  type: UUID
                   constraints:
                     foreignKeyName: fk_person_adv_id
                     referencedTableSchemaName: ticketing_schema
@@ -88,7 +88,7 @@ databaseChangeLog:
                     referencedColumnNames: id
               - column:
                   name: client_status_id
-                  type: bigint
+                  type: UUID
                   constraints:
                     foreignKeyName: fk_person_status_id
                     referencedTableSchemaName: ticketing_schema
@@ -102,11 +102,11 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: bigint
-                  autoIncrement: true
+                  type: UUID
                   constraints:
                     primaryKey: true
                     nullable: false
+                  defaultValueComputed: gen_random_uuid()
               - column:
                   name: shortname
                   type: varchar(5)
@@ -125,11 +125,11 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: bigint
-                  autoIncrement: true
+                  type: UUID
                   constraints:
                     primaryKey: true
                     nullable: false
+                  defaultValueComputed: gen_random_uuid()
               - column:
                   name: name
                   type: varchar(64)
@@ -137,7 +137,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: person_id
-                  type: bigint
+                  type: UUID
                   constraints:
                     foreignKeyName: fk_user_person_id
                     referencedTableSchemaName: ticketing_schema
@@ -145,16 +145,14 @@ databaseChangeLog:
                     referencedColumnNames: id
               - column:
                   name: office_id
-                  type: bigint
+                  type: UUID
                   constraints:
                     foreignKeyName: fk_user_office_id
                     referencedTableSchemaName: ticketing_schema
                     referencedTableName: office
                     referencedColumnNames: id
 
-
         # TICKET STAGE
-
         - createTable:
             schemaName: ticketing_schema
             tableName: ticket_stage
@@ -162,11 +160,12 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: bigint
-                  autoIncrement: true
+                  type: UUID
+                  autoIncrement: false
                   constraints:
                     primaryKey: true
                     nullable: false
+                  defaultValueComputed: gen_random_uuid()
               - column:
                   name: title
                   type: varchar(64)
@@ -179,8 +178,6 @@ databaseChangeLog:
                   constraints:
                     nullable: false
 
-
-
         # TICKET
         - createTable:
             schemaName: ticketing_schema
@@ -189,11 +186,11 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: bigint
-                  autoIncrement: true
+                  type: UUID
                   constraints:
                     primaryKey: true
                     nullable: false
+                  defaultValueComputed: gen_random_uuid()
               - column:
                   name: number
                   type: bigint
@@ -209,7 +206,7 @@ databaseChangeLog:
                   type: timestamp
               - column:
                   name: receiver_user
-                  type: bigint
+                  type: UUID
                   constraints:
                     foreignKeyName: fk_ticket_user_receiver_id
                     referencedTableSchemaName: ticketing_schema
@@ -217,7 +214,7 @@ databaseChangeLog:
                     referencedColumnNames: id
               - column:
                   name: executor_user
-                  type: bigint
+                  type: UUID
                   constraints:
                     foreignKeyName: fk_ticket_user_executor_id
                     referencedTableSchemaName: ticketing_schema
@@ -225,7 +222,7 @@ databaseChangeLog:
                     referencedColumnNames: id
               - column:
                   name: person_id
-                  type: bigint
+                  type: UUID
                   constraints:
                     foreignKeyName: fk_ticket_person_id
                     referencedTableSchemaName: ticketing_schema
@@ -238,7 +235,6 @@ databaseChangeLog:
             constraintName: unique_ticket_year_number
 
         # TICKET STAGE CHANGE
-
         - createTable:
             schemaName: ticketing_schema
             tableName: ticket_stage_change
@@ -246,11 +242,11 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: bigint
-                  autoIncrement: true
+                  type: UUID
                   constraints:
                     primaryKey: true
                     nullable: false
+                  defaultValueComputed: gen_random_uuid()
               - column:
                   name: edited_at
                   type: timestamp
@@ -258,7 +254,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: ticket_stage_id
-                  type: bigint
+                  type: UUID
                   constraints:
                     foreignKeyName: fk_ticket_stage_change_ticket_change_id
                     referencedTableSchemaName: ticketing_schema
@@ -266,7 +262,7 @@ databaseChangeLog:
                     referencedColumnNames: id
               - column:
                   name: ticket_id
-                  type: bigint
+                  type: UUID
                   constraints:
                     foreignKeyName: fk_ticket_stage_change_ticket_id
                     referencedTableSchemaName: ticketing_schema
@@ -274,14 +270,14 @@ databaseChangeLog:
                     referencedColumnNames: id
               - column:
                   name: user_id
-                  type: bigint
+                  type: UUID
                   constraints:
                     foreignKeyName: fk_ticket_stage_change_user_id
                     referencedTableSchemaName: ticketing_schema
-                    referencedColumnNames: id
                     referencedTableName: user
+                    referencedColumnNames: id
 
-        #        NOTE
+        # NOTE
         - createTable:
             schemaName: ticketing_schema
             tableName: note
@@ -289,11 +285,11 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: bigint
-                  autoIncrement: true
+                  type: UUID
                   constraints:
                     primaryKey: true
                     nullable: false
+                  defaultValueComputed: gen_random_uuid()
               - column:
                   name: createdDate
                   type: timestamp
@@ -301,10 +297,10 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: data
-                  type: varchar(500)
+                  type: varchar(1024)
               - column:
                   name: ticket_id
-                  type: bigint
+                  type: UUID
                   constraints:
                     foreignKeyName: fk_note_ticket_id
                     referencedTableSchemaName: ticketing_schema
@@ -312,11 +308,9 @@ databaseChangeLog:
                     referencedColumnNames: id
               - column:
                   name: user_id
-                  type: bigint
+                  type: UUID
                   constraints:
                     foreignKeyName: fk_note_user_id
                     referencedTableSchemaName: ticketing_schema
-                    referencedColumnNames: id
                     referencedTableName: user
-
-
+                    referencedColumnNames: id
