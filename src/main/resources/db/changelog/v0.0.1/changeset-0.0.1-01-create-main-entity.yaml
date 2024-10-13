@@ -6,10 +6,10 @@ databaseChangeLog:
       comment: developing main db structure
       changes:
 
-        # ADVERTISING
+        # ADVERTISEMENT
         - createTable:
             schemaName: ticketing_schema
-            tableName: advertising
+            tableName: advertisement
             remarks: info about where from this client
             columns:
               - column:
@@ -79,12 +79,12 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: advertising
+                  name: advertisement
                   type: UUID
                   constraints:
                     foreignKeyName: fk_person_adv_id
                     referencedTableSchemaName: ticketing_schema
-                    referencedTableName: advertising
+                    referencedTableName: advertisement
                     referencedColumnNames: id
               - column:
                   name: client_status_id

@@ -1,4 +1,4 @@
-package org.richard.backend.advertising;
+package org.richard.backend.advertisement;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -14,7 +14,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Advertising {
+public class Advertisement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
