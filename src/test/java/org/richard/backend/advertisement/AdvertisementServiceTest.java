@@ -6,11 +6,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.richard.backend.exception.DuplicateTitleException;
 import org.richard.backend.exception.NotFoundEntityByUuid;
 import org.richard.backend.exception.TitleIsBlank;
@@ -20,11 +15,6 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 class AdvertisementServiceTest {
@@ -68,7 +58,7 @@ class AdvertisementServiceTest {
                 advertisementService.getAdvertisementById(advertisementId)
         );
 
-        assertEquals("Advertisement not found for UUID: " + advertisementId, exception.getMessage());
+        assertEquals("Cant find entity Advertisement with UUID: " + advertisementId, exception.getMessage());
         verify(advertisementRepository, times(1)).existsById(advertisementId);
     }
 
@@ -91,7 +81,7 @@ class AdvertisementServiceTest {
                 advertisementService.createAdvertisement(advertisement)
         );
 
-        assertEquals("Title is blank or invalid for entity Advertisement", exception.getMessage());
+        assertEquals("Title for entity Advertisement can't be blank", exception.getMessage());
         verify(advertisementRepository, times(0)).existsByTitleIgnoreCase(anyString());
     }
 
@@ -133,7 +123,7 @@ class AdvertisementServiceTest {
                 advertisementService.updateAdvertisement(advertisementId, advertisement)
         );
 
-        assertEquals("Advertisement not found for UUID: " + advertisementId, exception.getMessage());
+        assertEquals("Cant find entity Advertisement with UUID: " + advertisementId, exception.getMessage());
         verify(advertisementRepository, times(1)).findById(advertisementId);
         verify(advertisementRepository, times(0)).save(any(Advertisement.class));
     }
