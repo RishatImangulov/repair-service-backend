@@ -22,7 +22,7 @@ public class AdvertisementService {
     }
 
     public List<Advertisement> searchAdvertisementsByTitleFragment(String titleFragment) {
-        return advertisementRepository.searchByTitleLikeIgnoreCase(titleFragment);
+        return advertisementRepository.findByTitleContainingIgnoreCase(titleFragment);
     }
 
     public Optional<Advertisement> getAdvertisementById(UUID id) {

@@ -1,22 +1,22 @@
-spring:
-  docker:
-    compose:
-      file: compose.yaml
-
-  liquibase:
-    enabled: true
-    change-log: db/changelog/master.yaml
-
-  datasource:
-    url: jdbc:postgresql://localhost:5432/service-db-test
-    username: richard
-    password: 5565
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    hibernate:
-      ddl-auto: none
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-    open-in-view: false
+#spring:
+#  docker:
+#    compose:
+#      file: compose.yaml
+#
+#  liquibase:
+#    enabled: true
+#    change-log: db/changelog/master.yaml
+#
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/service-db-test
+#    username: richard
+#    password: 5565
+#    driver-class-name: org.postgresql.Driver
+#  jpa:
+#    hibernate:
+#      ddl-auto: none
+#    show-sql: true
+#    properties:
+#      hibernate:
+#        format_sql: true
+#    open-in-view: false

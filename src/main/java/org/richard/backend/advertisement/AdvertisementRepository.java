@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public interface AdvertisementRepository extends JpaRepository<Advertisement, UUID> {
 
-    List<Advertisement> searchByTitleLikeIgnoreCase(String fragment);
+    List<Advertisement> findByTitleContainingIgnoreCase(String fragment);
 
     boolean existsByTitleIgnoreCase(String title);
 
