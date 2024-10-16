@@ -9,6 +9,7 @@ import org.mockito.MockitoAnnotations;
 import org.richard.backend.exception.DuplicateTitleException;
 import org.richard.backend.exception.NotFoundEntityByUuid;
 import org.richard.backend.exception.TitleIsBlank;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -16,6 +17,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
+
 
 class AdvertisementServiceTest {
     @Mock

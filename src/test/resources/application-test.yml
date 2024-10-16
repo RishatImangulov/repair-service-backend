@@ -1,35 +1,22 @@
 spring:
-#  datasource:
-#    url: jdbc:postgresql://localhost:5432/test_db  # Use a test-specific database
-#    username: test_user                             # Use a dedicated test user
-#    password: test_password                         # Password for the test user
-#    driver-class-name: org.postgresql.Driver
-#    # Keep connections open for testing, and tweak pooling if needed
-#    hikari:
-#      maximum-pool-size: 5
-#      minimum-idle: 2
-#      idle-timeout: 10000
-#      max-lifetime: 120000
-  datasource:
-    url: jdbc:tc:postgresql:16:///ad_test?TC_DAEMON=true
-    username: ad_test
-    password: ad_test
-  jpa:
-    hibernate:
-      ddl-auto: update   # This will automatically update the schema for tests, change to "validate" or "none" if migrations should be used
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-    show-sql: true        # This will print SQL queries to the console during tests for better debugging
+  docker:
+    compose:
+      file: compose.yaml
 
   liquibase:
-    enabled: false        # Optionally disable Liquibase for tests
+    enabled: true
+    change-log: db/changelog/master.yaml
 
-# Optional logging configuration to see SQL and transaction logs
-logging:
-  level:
-    org:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/service-db-test
+    username: richard
+    password: 5565
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
       hibernate:
-        SQL: DEBUG       # Shows SQL queries
-        type:
-          descriptor: TRACE  # Shows SQL parameter bindings (optional)
+        format_sql: true
+    open-in-view: false
