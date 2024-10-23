@@ -16,84 +16,53 @@ import java.util.UUID;
 public class AdvertisementService {
 
     private final AdvertisementRepository advertisementRepository;
+    private final AdvertisementMapper advertisementMapper;
 
-    /**
-     * Retrieves all advertisements from the repository.
-     *
-     * @return List of all advertisements
-     */
-    public List<Advertisement> getAdvertisements() {
-        return advertisementRepository.findAll();
+    public List<AdvertisementDTO> getAdvertisements() {
+        return advertisementMapper.toDTOList(
+                advertisementRepository.findAll());
     }
 
-    /**
-     * Searches for advertisements whose title contains the specified fragment, ignoring case.
-     *
-     * @param titleFragment the fragment of the title to search for
-     * @return List of advertisements matching the search criteria
-     */
-    public List<Advertisement> searchAdvertisementsByTitleFragment(String titleFragment) {
-        return advertisementRepository.findByTitleContainingIgnoreCase(titleFragment);
+    // should I check blank fragment?
+    public List<AdvertisementDTO> searchAdvertisementsByTitleFragment(String titleFragment) {
+        return advertisementMapper.toDTOList(
+                advertisementRepository.findByTitleContainingIgnoreCase(titleFragment));
     }
 
-    /**
-     * Retrieves an advertisement by its UUID.
-     * If the advertisement does not exist, a NotFoundEntityByUuid exception is thrown.
-     *
-     * @param id the UUID of the advertisement to retrieve
-     * @return Optional containing the advertisement, or empty if not found
-     */
-    public Optional<Advertisement> getAdvertisementById(UUID id) {
+    public Optional<AdvertisementDTO> getAdvertisementById(UUID id) {
         if (!advertisementRepository.existsById(id)) {
             throw new NotFoundEntityByUuid("Advertisement", id.toString());
         }
         return advertisementRepository.findById(id);
     }
 
-    /**
-     * Creates a new advertisement.
-     * Throws TitleIsBlank if the title is null or blank, and DuplicateTitleException if the title already exists.
-     *
-     * @param advertisement the Advertisement object to create
-     */
     @Transactional
-    public void createAdvertisement(Advertisement advertisement) {
-        if (advertisement.getTitle() == null || advertisement.getTitle().isBlank()) {
-            throw new TitleIsBlank(advertisement.getClass().getSimpleName());
+    public void createAdvertisement(AdvertisementDTO advertisementDTO) {
+        if (advertisementDTO.getTitle() == null || advertisementDTO.getTitle().isBlank()) {
+            throw new TitleIsBlank(advertisementDTO.getClass().getSimpleName());
         }
 
-        if (advertisementRepository.existsByTitleIgnoreCase(advertisement.getTitle())) {
+        if (advertisementRepository.existsByTitleIgnoreCase(advertisementDTO.getTitle())) {
             throw new DuplicateTitleException("Advertisement", "Title already exists");
         }
 
-        advertisementRepository.save(advertisement);
+        advertisementRepository.save(advertisementDTO);
     }
 
-    /**
-     * Updates an existing advertisement.
-     * Ensures that the advertisement exists, checks for duplicate titles if the title is changed,
-     * and maintains the consistency of the UUID.
-     * <p>
-     * Throws NotFoundEntityByUuid if the advertisement does not exist,
-     * and DuplicateTitleException if the new title already exists.
-     *
-     * @param id            the UUID of the advertisement to update
-     * @param advertisement the updated Advertisement object
-     */
     @Transactional
-    public void updateAdvertisement(UUID id, Advertisement advertisement) {
+    public void updateAdvertisement(UUID id, AdvertisementDTO advertisementDTO) {
         Optional<Advertisement> existingAd = advertisementRepository.findById(id);
         if (existingAd.isPresent()) {
             Advertisement existingAdvertisement = existingAd.get();
 
-            if (!existingAdvertisement.getTitle().equalsIgnoreCase(advertisement.getTitle())) {
-                if (advertisementRepository.existsByTitleIgnoreCase(advertisement.getTitle())) {
+            if (!existingAdvertisement.getTitle().equalsIgnoreCase(advertisementDTO.getTitle())) {
+                if (advertisementRepository.existsByTitleIgnoreCase(advertisementDTO.getTitle())) {
                     throw new DuplicateTitleException("Advertisement", "Title already exists");
                 }
             }
 
-            advertisement.setId(id); // Make sure the id stays consistent
-            advertisementRepository.save(advertisement);
+            advertisementDTO.setId(id); // Make sure the id stays consistent
+            advertisementRepository.save(advertisementDTO);
         } else {
             throw new NotFoundEntityByUuid("Advertisement", id.toString());
         }

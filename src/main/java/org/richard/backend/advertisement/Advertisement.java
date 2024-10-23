@@ -24,13 +24,9 @@ public class Advertisement {
     private UUID id;
 
     @Column(name = "title", nullable = false, unique = true, length = 64)
-    @NotNull(message = "Title can't be blank")
-    @NotBlank(message = "Title can't be blank")
-    @Size(max = 64, min = 2, message = "Size must be since 2 to 64")
     private String title;
 
     @Column(name = "description", nullable = false, length = 255)
-    @Size(max = 255, message = "Maximum size is 255")
     private String description;
 
     @Override

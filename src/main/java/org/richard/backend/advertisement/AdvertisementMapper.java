@@ -1,0 +1,48 @@
+package org.richard.backend.advertisement;
+
+import org.richard.backend.exception.NullDataMappingException;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Component
+public class AdvertisementMapper {
+
+    public Advertisement toEntity(AdvertisementDTO advertisementDTO) {
+        if (advertisementDTO == null) {
+            throw new NullDataMappingException("Cannot map NULL AdvertisementDTO to Advertisement entity.");
+        }
+
+        return Advertisement.builder()
+                .id(advertisementDTO.getId())
+                .title(advertisementDTO.getTitle())
+                .description(advertisementDTO.getDescription())
+                .build();
+    }
+
+    // Convert Entity to DTO
+    public AdvertisementDTO toDTO(Advertisement advertisement) {
+        if (advertisement == null) {
+            throw new NullDataMappingException("Cannot map NULL Advertisement entity to AdvertisementDTO.");
+        }
+
+        return AdvertisementDTO.builder()
+                .id(advertisement.getId())
+                .title(advertisement.getTitle())
+                .description(advertisement.getDescription())
+                .build();
+    }
+
+    public List<AdvertisementDTO> toDTOList(List<Advertisement> advertisements) {
+        return advertisements.stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<Advertisement> toEntityList(List<AdvertisementDTO> advertisementDTOs) {
+        return advertisementDTOs.stream()
+                .map(this::toEntity)
+                .collect(Collectors.toList());
+    }
+}
