@@ -3,13 +3,11 @@ package org.richard.backend.advertisement;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.richard.backend.exception.NotFoundEntityByUuid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -20,7 +18,7 @@ public class AdvertisementController {
     private final AdvertisementService advertisementService;
 
     @GetMapping
-    public ResponseEntity<List<Advertisement>> getAllAdvertisements() {
+    public ResponseEntity<List<AdvertisementDTO>> getAllAdvertisements() {
         List<AdvertisementDTO> ads = advertisementService.getAdvertisements();
         return ResponseEntity.ok(ads);
     }
@@ -32,10 +30,9 @@ public class AdvertisementController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Advertisement> getAdvertisementById(@PathVariable UUID id) {
-        AdvertisementDTO advertisement = advertisementService.getAdvertisementById(id)
-                .orElseThrow(() -> new NotFoundEntityByUuid("Advertisement", id.toString()));
-        return ResponseEntity.ok(advertisement);
+    public ResponseEntity<AdvertisementDTO> getAdvertisementById(@PathVariable UUID id) {
+        AdvertisementDTO advertisementDTO = advertisementService.getAdvertisementById(id);
+        return ResponseEntity.ok(advertisementDTO);
     }
 
     @PostMapping

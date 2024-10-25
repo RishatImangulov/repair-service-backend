@@ -18,6 +18,7 @@ public class AdvertisementDTO {
 
     private UUID id;
 
+    @NotNull
     @NotBlank(message = "Title can't be blank")
     @Size(max = 64, min = 2, message = "Title must be between 2 and 64 characters")
     private String title;

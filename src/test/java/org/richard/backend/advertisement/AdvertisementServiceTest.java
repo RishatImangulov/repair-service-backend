@@ -45,7 +45,7 @@ class AdvertisementServiceTest {
         when(advertisementRepository.existsById(advertisementId)).thenReturn(true);
         when(advertisementRepository.findById(advertisementId)).thenReturn(Optional.of(advertisement));
 
-        Optional<Advertisement> result = advertisementService.getAdvertisementById(advertisementId);
+        Optional<AdvertisementDTO> result = advertisementService.getAdvertisementById(advertisementId);
 
         assertTrue(result.isPresent());
         assertEquals(advertisement.getTitle(), result.get().getTitle());

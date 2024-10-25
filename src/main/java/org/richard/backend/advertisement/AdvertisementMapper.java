@@ -21,7 +21,6 @@ public class AdvertisementMapper {
                 .build();
     }
 
-    // Convert Entity to DTO
     public AdvertisementDTO toDTO(Advertisement advertisement) {
         if (advertisement == null) {
             throw new NullDataMappingException("Cannot map NULL Advertisement entity to AdvertisementDTO.");
@@ -44,5 +43,16 @@ public class AdvertisementMapper {
         return advertisementDTOs.stream()
                 .map(this::toEntity)
                 .collect(Collectors.toList());
+    }
+
+    public Advertisement updateEntityFromDTO(Advertisement existingAd, AdvertisementDTO advertisementDTO) {
+        if (advertisementDTO.getTitle() != null && !advertisementDTO.getTitle().isBlank()) {
+            existingAd.setTitle(advertisementDTO.getTitle());
+        }
+
+        if (advertisementDTO.getDescription() != null) {
+            existingAd.setDescription(advertisementDTO.getDescription());
+        }
+        return existingAd;
     }
 }
