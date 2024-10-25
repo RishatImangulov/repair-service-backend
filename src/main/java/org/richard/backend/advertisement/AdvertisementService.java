@@ -69,7 +69,13 @@ public class AdvertisementService {
         }, () -> {
             throw new NotFoundEntityByUuid("Advertisement", id.toString());
         });
+    }
 
-
+    @Transactional
+    public void deleteAdvertisement(UUID id) {
+        if (!advertisementRepository.existsById(id)) {
+            throw new NotFoundEntityByUuid("Advertisement", id.toString());
+        }
+        advertisementRepository.deleteById(id);
     }
 }
