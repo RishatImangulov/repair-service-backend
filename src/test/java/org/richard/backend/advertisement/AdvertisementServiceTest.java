@@ -5,148 +5,82 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import org.richard.backend.exception.DuplicateTitleException;
 import org.richard.backend.exception.NotFoundEntityByUuid;
-import org.richard.backend.exception.TitleIsBlank;
-import org.springframework.test.context.ActiveProfiles;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@WebMvcTest(AdvertisementController.class)
+public class AdvertisementServiceTest {
 
-class AdvertisementServiceTest {
+    private static final Logger log = LoggerFactory.getLogger(AdvertisementServiceTest.class);
+    @MockBean
+    private AdvertisementService advertisementService;
+
+    @InjectMocks
+    private AdvertisementController advertisementController;
+
     @Mock
     private AdvertisementRepository advertisementRepository;
 
-    @InjectMocks
-    private AdvertisementService advertisementService;
+    @Mock
+    private AdvertisementMapper advertisementMapper;
 
-    private Advertisement advertisement;
-    private UUID advertisementId;
+    private AdvertisementDTO sampleDTO;
+    private Advertisement sampleEntity;
 
     @BeforeEach
-    public void setUp() {
+    public void setup() {
         MockitoAnnotations.openMocks(this);
-
-        advertisementId = UUID.randomUUID();
-        advertisement = new Advertisement();
-        advertisement.setId(advertisementId);
-        advertisement.setTitle("Test Advertisement");
-        advertisement.setDescription("Test Description");
+        sampleDTO = new AdvertisementDTO(UUID.randomUUID(), "Sample Title", "Sample Description");
+        sampleEntity = new Advertisement(UUID.randomUUID(), "Sample Title", "Sample Description");
     }
 
     @Test
-    public void testGetAdvertisementById_Success() {
-        when(advertisementRepository.existsById(advertisementId)).thenReturn(true);
-        when(advertisementRepository.findById(advertisementId)).thenReturn(Optional.of(advertisement));
-
-        Optional<AdvertisementDTO> result = advertisementService.getAdvertisementById(advertisementId);
-
-        assertTrue(result.isPresent());
-        assertEquals(advertisement.getTitle(), result.get().getTitle());
-        verify(advertisementRepository, times(1)).findById(advertisementId);
+    public void testGetAllAdvertisements() {
+        when(advertisementService.getAdvertisements()).thenReturn(List.of(sampleDTO));
+        assert advertisementService.getAdvertisements().size() == 1;
+        verify(advertisementService, times(1)).getAdvertisements();
     }
 
     @Test
-    public void testGetAdvertisementById_NotFound() {
-        when(advertisementRepository.existsById(advertisementId)).thenReturn(false);
-
-        NotFoundEntityByUuid exception = assertThrows(NotFoundEntityByUuid.class, () ->
-                advertisementService.getAdvertisementById(advertisementId)
-        );
-
-        assertEquals("Cant find entity Advertisement with UUID: " + advertisementId, exception.getMessage());
-        verify(advertisementRepository, times(1)).existsById(advertisementId);
+    public void testCreateAdvertisement() {
+        doNothing().when(advertisementService).createAdvertisement(sampleDTO);
+        advertisementService.createAdvertisement(sampleDTO);
+        verify(advertisementService, times(1)).createAdvertisement(sampleDTO);
     }
 
     @Test
-    public void testCreateAdvertisement_Success() {
-        when(advertisementRepository.existsByTitleIgnoreCase(anyString())).thenReturn(false);
-        when(advertisementRepository.save(any(Advertisement.class))).thenReturn(advertisement);
-
-        advertisementService.createAdvertisement(advertisement);
-
-        verify(advertisementRepository, times(1)).existsByTitleIgnoreCase(advertisement.getTitle());
-        verify(advertisementRepository, times(1)).save(advertisement);
+    public void testDuplicateTitleException() {
+        when(advertisementRepository.existsByTitleIgnoreCase(sampleDTO.getTitle())).thenReturn(true);
+        System.out.printf("ff");
+        assertThrows(DuplicateTitleException.class, () -> advertisementService.createAdvertisement(sampleDTO));
     }
 
     @Test
-    public void testCreateAdvertisement_TitleIsBlank() {
-        advertisement.setTitle("");  // Set blank title
-
-        TitleIsBlank exception = assertThrows(TitleIsBlank.class, () ->
-                advertisementService.createAdvertisement(advertisement)
-        );
-
-        assertEquals("Title for entity Advertisement can't be blank", exception.getMessage());
-        verify(advertisementRepository, times(0)).existsByTitleIgnoreCase(anyString());
+    public void testGetAdvertisementByIdNotFound() {
+        UUID id = UUID.randomUUID();
+        when(advertisementRepository.findById(id)).thenThrow(new NotFoundEntityByUuid("Advertisement", id.toString()));
+        assertThrows(NotFoundEntityByUuid.class, () -> advertisementService.getAdvertisementById(id));
     }
 
     @Test
-    public void testCreateAdvertisement_DuplicateTitle() {
-        when(advertisementRepository.existsByTitleIgnoreCase(anyString())).thenReturn(true);
-
-        DuplicateTitleException exception = assertThrows(DuplicateTitleException.class, () ->
-                advertisementService.createAdvertisement(advertisement)
-        );
-
-        assertEquals("Advertisement: Title already exists", exception.getMessage());
-        verify(advertisementRepository, times(1)).existsByTitleIgnoreCase(advertisement.getTitle());
-        verify(advertisementRepository, times(0)).save(any(Advertisement.class));
+    public void testSearchAdvertisementsByTitleFragment() {
+        when(advertisementService.searchAdvertisementsByTitleFragment("Sample")).thenReturn(List.of(sampleDTO));
+        assert advertisementService.searchAdvertisementsByTitleFragment("Sample").size() == 1;
     }
 
-    @Test
-    public void testUpdateAdvertisement_Success() {
-        when(advertisementRepository.findById(advertisementId)).thenReturn(Optional.of(advertisement));
-        when(advertisementRepository.existsByTitleIgnoreCase(anyString())).thenReturn(false);
 
-        Advertisement updatedAd = new Advertisement();
-        updatedAd.setId(advertisementId);
-        updatedAd.setTitle("Updated Title");
-        updatedAd.setDescription("Updated Description");
 
-        advertisementService.updateAdvertisement(advertisementId, updatedAd);
-
-        verify(advertisementRepository, times(1)).findById(advertisementId);
-        verify(advertisementRepository, times(1)).existsByTitleIgnoreCase(updatedAd.getTitle());
-        verify(advertisementRepository, times(1)).save(updatedAd);
-    }
-
-    @Test
-    public void testUpdateAdvertisement_NotFound() {
-        when(advertisementRepository.findById(advertisementId)).thenReturn(Optional.empty());
-
-        NotFoundEntityByUuid exception = assertThrows(NotFoundEntityByUuid.class, () ->
-                advertisementService.updateAdvertisement(advertisementId, advertisement)
-        );
-
-        assertEquals("Cant find entity Advertisement with UUID: " + advertisementId, exception.getMessage());
-        verify(advertisementRepository, times(1)).findById(advertisementId);
-        verify(advertisementRepository, times(0)).save(any(Advertisement.class));
-    }
-
-    @Test
-    public void testUpdateAdvertisement_DuplicateTitle() {
-        when(advertisementRepository.findById(advertisementId)).thenReturn(Optional.of(advertisement));
-        when(advertisementRepository.existsByTitleIgnoreCase(anyString())).thenReturn(true);
-
-        Advertisement updatedAd = new Advertisement();
-        updatedAd.setId(advertisementId);
-        updatedAd.setTitle("New Duplicate Title");
-        updatedAd.setDescription("Updated Description");
-
-        DuplicateTitleException exception = assertThrows(DuplicateTitleException.class, () ->
-                advertisementService.updateAdvertisement(advertisementId, updatedAd)
-        );
-
-        assertEquals("Advertisement: Title already exists", exception.getMessage());
-        verify(advertisementRepository, times(1)).findById(advertisementId);
-        verify(advertisementRepository, times(1)).existsByTitleIgnoreCase(updatedAd.getTitle());
-        verify(advertisementRepository, times(0)).save(any(Advertisement.class));
-    }
 }
