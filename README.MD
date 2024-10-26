@@ -1,0 +1,1 @@
+1. what i should t do - if a get in @GetMapping("/{id}") not even UUID ? 

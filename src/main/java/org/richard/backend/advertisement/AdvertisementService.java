@@ -44,6 +44,7 @@ public class AdvertisementService {
         advertisementDTO.setTitle(advertisementDTO.getTitle().trim());
         advertisementDTO.setDescription(advertisementDTO.getDescription().trim());
 
+
         if (advertisementRepository.existsByTitleIgnoreCase(advertisementDTO.getTitle())) {
             throw new DuplicateTitleException("Advertisement", "Title already exists");
         }

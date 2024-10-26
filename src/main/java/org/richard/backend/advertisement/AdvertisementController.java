@@ -47,4 +47,9 @@ public class AdvertisementController {
         advertisementService.updateAdvertisement(id, advertisementDTO);
         return ResponseEntity.ok("Advertisement updated successfully.");
     }
+
+    @DeleteMapping("/{id}")
+    public void deleteAdvertisement(@PathVariable UUID id) {
+        advertisementService.deleteAdvertisement(id);
+    }
 }
