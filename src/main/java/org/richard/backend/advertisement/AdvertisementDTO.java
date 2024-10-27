@@ -7,9 +7,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.richard.backend.clientstatus.ClientStatus;
 
 import java.util.UUID;
 
+
+/**
+ * DTO for {@link Advertisement}
+ */
 @Builder
 @Data
 @NoArgsConstructor

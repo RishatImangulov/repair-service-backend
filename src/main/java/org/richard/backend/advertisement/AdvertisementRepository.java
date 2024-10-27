@@ -1,14 +1,9 @@
 package org.richard.backend.advertisement;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.richard.backend.repository.BasicRepository;
 
-import java.util.List;
 import java.util.UUID;
 
-public interface AdvertisementRepository extends JpaRepository<Advertisement, UUID> {
-
-    List<Advertisement> findByTitleContainingIgnoreCase(String fragment);
-
-    boolean existsByTitleIgnoreCase(String title);
+public interface AdvertisementRepository extends BasicRepository<Advertisement, UUID> {
 
 }
