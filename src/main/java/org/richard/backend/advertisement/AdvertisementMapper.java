@@ -36,13 +36,13 @@ public class AdvertisementMapper {
     public List<AdvertisementDTO> toDTOList(List<Advertisement> advertisements) {
         return advertisements.stream()
                 .map(this::toDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<Advertisement> toEntityList(List<AdvertisementDTO> advertisementDTOs) {
         return advertisementDTOs.stream()
                 .map(this::toEntity)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public Advertisement updateEntityFromDTO(Advertisement existingAd, AdvertisementDTO advertisementDTO) {

@@ -31,30 +31,6 @@ databaseChangeLog:
                   constraints:
                     nullable: false
 
-        #  CLIENT STATUS
-        - createTable:
-            schemaName: ticketing_schema
-            tableName: client_status
-            columns:
-              - column:
-                  name: id
-                  type: UUID
-                  constraints:
-                    primaryKey: true
-                    nullable: false
-                  defaultValueComputed: gen_random_uuid()
-              - column:
-                  name: title
-                  type: varchar(64)
-                  constraints:
-                    unique: true
-                    nullable: false
-              - column:
-                  name: description
-                  type: varchar(255)
-                  constraints:
-                    nullable: false
-
         # PERSON
         - createTable:
             schemaName: ticketing_schema
@@ -87,13 +63,10 @@ databaseChangeLog:
                     referencedTableName: advertisement
                     referencedColumnNames: id
               - column:
-                  name: client_status_id
-                  type: UUID
+                  name: client_status
+                  type: varchar(128)
                   constraints:
-                    foreignKeyName: fk_person_status_id
-                    referencedTableSchemaName: ticketing_schema
-                    referencedTableName: client_status
-                    referencedColumnNames: id
+                    nullable: false
 
         # OFFICE
         - createTable:

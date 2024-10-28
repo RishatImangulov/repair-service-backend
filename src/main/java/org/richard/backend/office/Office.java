@@ -10,6 +10,7 @@ import java.util.UUID;
 
 @Setter
 @Builder
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity

@@ -3,9 +3,6 @@ package org.richard.backend.advertisement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.richard.backend.exception.NotFoundEntityByUuid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.List;
 import java.util.UUID;
@@ -53,10 +49,10 @@ public class AdvertisementControllerTest {
     }
 
     @Test
-    public void testGetAllAdvertisements() throws Exception {
+    public void testGetAll() throws Exception {
         List<AdvertisementDTO> ads = List.of(sampleDTO);
 
-        when(advertisementService.getAdvertisements()).thenReturn(ads);
+        when(advertisementService.getAll()).thenReturn(ads);
 
         mockMvc.perform(get("/api/advertisements"))
                 .andExpect(status().isOk())
@@ -64,13 +60,13 @@ public class AdvertisementControllerTest {
                 .andExpect(jsonPath("$[0].title").value("Sample Title"))
                 .andExpect(jsonPath("$[0].description").value("Sample Description"));
 
-        verify(advertisementService, times(1)).getAdvertisements();
+        verify(advertisementService, times(1)).getAll();
     }
     @Test
-    public void testSearchAdvertisements() throws Exception {
+    public void testSearch() throws Exception {
         List<AdvertisementDTO> results = List.of(sampleDTO);
 
-        when(advertisementService.searchAdvertisementsByTitleFragment("Sample")).thenReturn(results);
+        when(advertisementService.findAllByTitleFragment("Sample")).thenReturn(results);
 
         mockMvc.perform(get("/api/advertisements/search")
                         .param("titleFragment", "Sample"))
@@ -79,11 +75,11 @@ public class AdvertisementControllerTest {
                 .andExpect(jsonPath("$[0].title").value("Sample Title"))
                 .andExpect(jsonPath("$[0].description").value("Sample Description"));
 
-        verify(advertisementService, times(1)).searchAdvertisementsByTitleFragment("Sample");
+        verify(advertisementService, times(1)).findAllByTitleFragment("Sample");
     }
     @Test
-    public void testGetAdvertisementById_Success() throws Exception {
-        when(advertisementService.getAdvertisementById(sampleId)).thenReturn(sampleDTO);
+    public void testGetById_Success() throws Exception {
+        when(advertisementService.getById(sampleId)).thenReturn(sampleDTO);
 
         mockMvc.perform(get("/api/advertisements/{id}", sampleId))
                 .andExpect(status().isOk())
@@ -91,21 +87,21 @@ public class AdvertisementControllerTest {
                 .andExpect(jsonPath("$.title").value("Sample Title"))
                 .andExpect(jsonPath("$.description").value("Sample Description"));
 
-        verify(advertisementService, times(1)).getAdvertisementById(sampleId);
+        verify(advertisementService, times(1)).getById(sampleId);
     }
 
     @Test
-    public void testGetAdvertisementById_NotFound() throws Exception {
-        when(advertisementService.getAdvertisementById(sampleId)).thenThrow(new NotFoundEntityByUuid("Advertisement", sampleId.toString()));
+    public void testGetById_NotFound() throws Exception {
+        when(advertisementService.getById(sampleId)).thenThrow(new NotFoundEntityByUuid("Advertisement", sampleId.toString()));
 
         mockMvc.perform(get("/api/advertisements/{id}", sampleId))
                 .andExpect(status().isNotFound());
 
-        verify(advertisementService, times(1)).getAdvertisementById(sampleId);
+        verify(advertisementService, times(1)).getById(sampleId);
     }
     @Test
-    public void testCreateAdvertisement_Success() throws Exception {
-        doNothing().when(advertisementService).createAdvertisement(any(AdvertisementDTO.class));
+    public void testCreate_Success() throws Exception {
+        doNothing().when(advertisementService).create(any(AdvertisementDTO.class));
 
         mockMvc.perform(post("/api/advertisements")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -113,11 +109,11 @@ public class AdvertisementControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(content().string("Advertisement created successfully."));
 
-        verify(advertisementService, times(1)).createAdvertisement(any(AdvertisementDTO.class));
+        verify(advertisementService, times(1)).create(any(AdvertisementDTO.class));
     }
 
     @Test
-    public void testCreateAdvertisement_InvalidInput() throws Exception {
+    public void testCreate_InvalidInput() throws Exception {
         AdvertisementDTO invalidDTO = new AdvertisementDTO(sampleId, "", "Sample Description");
 
         mockMvc.perform(post("/api/advertisements")
@@ -126,8 +122,8 @@ public class AdvertisementControllerTest {
                 .andExpect(status().isBadRequest());
     }
     @Test
-    public void testUpdateAdvertisement_Success() throws Exception {
-        doNothing().when(advertisementService).updateAdvertisement(eq(sampleId), any(AdvertisementDTO.class));
+    public void testUpdate_Success() throws Exception {
+        doNothing().when(advertisementService).update(eq(sampleId), any(AdvertisementDTO.class));
 
         mockMvc.perform(put("/api/advertisements/{id}", sampleId)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -135,13 +131,13 @@ public class AdvertisementControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("Advertisement updated successfully."));
 
-        verify(advertisementService, times(1)).updateAdvertisement(eq(sampleId), any(AdvertisementDTO.class));
+        verify(advertisementService, times(1)).update(eq(sampleId), any(AdvertisementDTO.class));
     }
 
     @Test
-    public void testUpdateAdvertisement_NotFound() throws Exception {
+    public void testUpdate_NotFound() throws Exception {
         doThrow(new NotFoundEntityByUuid("Advertisement", sampleId.toString()))
-                .when(advertisementService).updateAdvertisement(eq(sampleId), any(AdvertisementDTO.class));
+                .when(advertisementService).update(eq(sampleId), any(AdvertisementDTO.class));
 
         mockMvc.perform(put("/api/advertisements/{id}", sampleId)
                         .contentType(MediaType.APPLICATION_JSON)

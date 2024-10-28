@@ -5,9 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.richard.backend.advertisement.*;
 import org.richard.backend.exception.DuplicateTitleException;
 import org.richard.backend.exception.NotFoundEntityByUuid;
 import org.richard.backend.exception.TitleIsBlank;
@@ -44,69 +42,69 @@ public class AdvertisementServiceTest {
 
 
     @Test
-    public void testCreateAdvertisement_ThrowsTitleIsBlank() {
+    public void testCreate_ThrowsTitleIsBlank() {
         sampleDTO.setTitle(" "); // Simulate blank title
-        Exception exception = assertThrows(TitleIsBlank.class, () -> advertisementService.createAdvertisement(sampleDTO));
+        Exception exception = assertThrows(TitleIsBlank.class, () -> advertisementService.create(sampleDTO));
         assertEquals("Title for entity Advertisement can't be blank", exception.getMessage());
     }
 
     @Test
-    public void testCreateAdvertisement_ThrowsDuplicateTitleException() {
+    public void testCreate_ThrowsDuplicateTitleException() {
         when(advertisementRepository.existsByTitleIgnoreCase(sampleDTO.getTitle())).thenReturn(true);
-        assertThrows(DuplicateTitleException.class, () -> advertisementService.createAdvertisement(sampleDTO));
+        assertThrows(DuplicateTitleException.class, () -> advertisementService.create(sampleDTO));
     }
 
     @Test
-    public void testCreateAdvertisement_Success() {
+    public void testCreate_Success() {
         when(advertisementRepository.existsByTitleIgnoreCase(sampleDTO.getTitle())).thenReturn(false);
         when(advertisementMapper.toEntity(sampleDTO)).thenReturn(sampleAdvertisement);
 
-        advertisementService.createAdvertisement(sampleDTO);
+        advertisementService.create(sampleDTO);
 
         verify(advertisementRepository, times(1)).save(sampleAdvertisement);
     }
 
     @Test
-    public void testGetAdvertisements() {
+    public void testGetAll() {
         List<Advertisement> ads = List.of(sampleAdvertisement);
         List<AdvertisementDTO> adDTOs = List.of(sampleDTO);
 
         when(advertisementRepository.findAll()).thenReturn(ads);
         when(advertisementMapper.toDTOList(ads)).thenReturn(adDTOs);
 
-        List<AdvertisementDTO> result = advertisementService.getAdvertisements();
+        List<AdvertisementDTO> result = advertisementService.getAll();
 
         assertEquals(adDTOs, result);
     }
 
     @Test
-    public void testGetAdvertisementById_Success() {
+    public void testGetById_Success() {
         when(advertisementRepository.findById(sampleId)).thenReturn(Optional.of(sampleAdvertisement));
         when(advertisementMapper.toDTO(sampleAdvertisement)).thenReturn(sampleDTO);
 
-        AdvertisementDTO result = advertisementService.getAdvertisementById(sampleId);
+        AdvertisementDTO result = advertisementService.getById(sampleId);
 
         assertEquals(sampleDTO, result);
     }
 
     @Test
-    public void testGetAdvertisementById_ThrowsNotFound() {
+    public void testGetById_ThrowsNotFound() {
         when(advertisementRepository.findById(sampleId)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundEntityByUuid.class, () -> advertisementService.getAdvertisementById(sampleId));
+        assertThrows(NotFoundEntityByUuid.class, () -> advertisementService.getById(sampleId));
     }
 
     @Test
-    public void testUpdateAdvertisement_ThrowsDuplicateTitleException() {
+    public void testUpdate_ThrowsDuplicateTitleException() {
         AdvertisementDTO updatedDTO = new AdvertisementDTO(sampleId, "New Title", "Updated Description");
         when(advertisementRepository.findById(sampleId)).thenReturn(Optional.of(sampleAdvertisement));
         when(advertisementRepository.existsByTitleIgnoreCase(updatedDTO.getTitle())).thenReturn(true);
 
-        assertThrows(DuplicateTitleException.class, () -> advertisementService.updateAdvertisement(sampleId, updatedDTO));
+        assertThrows(DuplicateTitleException.class, () -> advertisementService.update(sampleId, updatedDTO));
     }
 
     @Test
-    public void testUpdateAdvertisement_Success() {
+    public void testUpdate_Success() {
         AdvertisementDTO updatedDTO = new AdvertisementDTO(sampleId, "Updated Title", "Updated Description");
         Advertisement updatedAd = new Advertisement(sampleId, "Updated Title", "Updated Description");
 
@@ -114,34 +112,34 @@ public class AdvertisementServiceTest {
         when(advertisementRepository.existsByTitleIgnoreCase(updatedDTO.getTitle())).thenReturn(false);
         when(advertisementMapper.updateEntityFromDTO(sampleAdvertisement, updatedDTO)).thenReturn(updatedAd);
 
-        advertisementService.updateAdvertisement(sampleId, updatedDTO);
+        advertisementService.update(sampleId, updatedDTO);
 
         verify(advertisementRepository, times(1)).save(updatedAd);
     }
 
     @Test
-    public void testUpdateAdvertisement_ThrowsNotFound() {
+    public void testUpdate_ThrowsNotFound() {
         AdvertisementDTO updatedDTO = new AdvertisementDTO(UUID.randomUUID(), "New Title", "Updated Description");
         when(advertisementRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundEntityByUuid.class, () -> advertisementService.updateAdvertisement(UUID.randomUUID(), updatedDTO));
+        assertThrows(NotFoundEntityByUuid.class, () -> advertisementService.update(UUID.randomUUID(), updatedDTO));
     }
 
 
     @Test
-    public void testDeleteAdvertisement_Success() {
+    public void testDelete_Success() {
         when(advertisementRepository.existsById(sampleId)).thenReturn(true);
 
-        advertisementService.deleteAdvertisement(sampleId);
+        advertisementService.delete(sampleId);
 
         verify(advertisementRepository, times(1)).deleteById(sampleId);
     }
 
     @Test
-    public void testDeleteAdvertisement_ThrowsNotFound() {
+    public void testDelete_ThrowsNotFound() {
         when(advertisementRepository.existsById(sampleId)).thenReturn(false);
 
-        assertThrows(NotFoundEntityByUuid.class, () -> advertisementService.deleteAdvertisement(sampleId));
+        assertThrows(NotFoundEntityByUuid.class, () -> advertisementService.delete(sampleId));
     }
 }
 

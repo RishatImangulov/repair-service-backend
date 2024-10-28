@@ -17,18 +17,18 @@ public class AdvertisementService {
     private final AdvertisementRepository advertisementRepository;
     private final AdvertisementMapper advertisementMapper;
 
-    public List<AdvertisementDTO> getAdvertisements() {
+    public List<AdvertisementDTO> getAll() {
         return advertisementMapper.toDTOList(
                 advertisementRepository.findAll());
     }
 
     // should I check blank fragment?
-    public List<AdvertisementDTO> searchAdvertisementsByTitleFragment(String titleFragment) {
+    public List<AdvertisementDTO> findAllByTitleFragment(String titleFragment) {
         return advertisementMapper.toDTOList(
                 advertisementRepository.findByTitleContainingIgnoreCase(titleFragment));
     }
 
-    public AdvertisementDTO getAdvertisementById(UUID id) {
+    public AdvertisementDTO getById(UUID id) {
         return advertisementRepository.findById(id)
                 .map(advertisementMapper::toDTO)
                 .orElseThrow(() -> new NotFoundEntityByUuid("Advertisement", id.toString()));
@@ -36,11 +36,12 @@ public class AdvertisementService {
     }
 
     @Transactional
-    public void createAdvertisement(AdvertisementDTO advertisementDTO) {
+    public AdvertisementDTO create(AdvertisementDTO advertisementDTO) {
         if (advertisementDTO.getTitle() == null || advertisementDTO.getTitle().isBlank()) {
             throw new TitleIsBlank("Advertisement");
         }
 
+        advertisementDTO.setId(null); // because we are creating
         advertisementDTO.setTitle(advertisementDTO.getTitle().trim());
         advertisementDTO.setDescription(advertisementDTO.getDescription().trim());
 
@@ -49,11 +50,12 @@ public class AdvertisementService {
             throw new DuplicateTitleException("Advertisement", "Title already exists");
         }
 
-        advertisementRepository.save(advertisementMapper.toEntity(advertisementDTO));
+        var saved = advertisementRepository.save(advertisementMapper.toEntity(advertisementDTO));
+        return advertisementMapper.toDTO(saved);
     }
 
     @Transactional
-    public void updateAdvertisement(UUID id, AdvertisementDTO advertisementDTO) {
+    public AdvertisementDTO update(UUID id, AdvertisementDTO advertisementDTO) {
 
         advertisementDTO.setTitle(advertisementDTO.getTitle().trim());
         advertisementDTO.setDescription(advertisementDTO.getDescription().trim());
@@ -70,10 +72,13 @@ public class AdvertisementService {
         }, () -> {
             throw new NotFoundEntityByUuid("Advertisement", id.toString());
         });
+        // TODO  - uuid correct?
+        return advertisementDTO;
+
     }
 
     @Transactional
-    public void deleteAdvertisement(UUID id) {
+    public void delete(UUID id) {
         if (!advertisementRepository.existsById(id)) {
             throw new NotFoundEntityByUuid("Advertisement", id.toString());
         }
