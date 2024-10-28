@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ClientStatusRepository extends JpaRepository<ClientStatus, UUID> {
-    List<Advertisement> findByTitleContainingIgnoreCase(String fragment);
+
+    List<ClientStatus> findByTitleContainingIgnoreCase(String fragment);
 
     boolean existsByTitleIgnoreCase(String title);
 }

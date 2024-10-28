@@ -3,7 +3,7 @@ package org.richard.backend.clientstatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Value;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -11,7 +11,11 @@ import java.util.UUID;
 /**
  * DTO for {@link ClientStatus}
  */
-@Value
+@Builder
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+//@Value
 public class ClientStatusDTO implements Serializable {
     UUID id;
 
