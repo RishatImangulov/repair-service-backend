@@ -13,19 +13,18 @@ import java.util.UUID;
  */
 @Builder
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class OfficeDTO implements Serializable {
 
     private UUID id;
 
-    @NotNull
-    @Size(min = 2, max = 5)
-    @NotBlank
+    @NotNull(message = "Short name is required")
+    @Size(min = 2, max = 5, message = "Short name must be between 2 and 5 characters")
+    @NotBlank(message = "Short name can't be blank")
     private String shortname;
 
-    @NotNull
-    @Size(max = 255)
+    @NotNull(message = "Name if required")
+    @Size(max = 255, message = "Description can't exceed 255 characters")
     @NotBlank
     private String name;
+
 }

@@ -11,7 +11,7 @@ import java.util.UUID;
  * DTO for {@link Person}
  */
 @Value
-public class PersonDto implements Serializable {
+public class PersonDTO implements Serializable {
     UUID id;
 
     @NotNull
