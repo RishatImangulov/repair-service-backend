@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -15,6 +16,7 @@ import java.util.UUID;
  */
 @Builder
 @Data
+@NoArgsConstructor
 public class AdvertisementDTO implements Serializable {
 
     private UUID id;

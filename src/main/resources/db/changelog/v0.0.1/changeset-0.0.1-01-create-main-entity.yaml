@@ -44,16 +44,27 @@ databaseChangeLog:
                     nullable: false
                   defaultValueComputed: gen_random_uuid()
               - column:
-                  name: name
+                  name: fullName
                   type: varchar(255)
                   constraints:
                     unique: true
                     nullable: false
               - column:
-                  name: phone
-                  type: bigint
+                  name: phone_primary
+                  type: varchar(15)
                   constraints:
                     nullable: false
+              - column:
+                  name: phone_secondary
+                  type: varchar(15)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: email
+                  type: varchar(100)
+              - column:
+                  name: telegram
+                  type: varchar(200)
               - column:
                   name: advertisement
                   type: UUID
@@ -67,6 +78,9 @@ databaseChangeLog:
                   type: varchar(128)
                   constraints:
                     nullable: false
+              - column:
+                  name: comment
+                  type: varchar(200)
 
         # OFFICE
         - createTable:
