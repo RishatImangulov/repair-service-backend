@@ -2,12 +2,14 @@ package org.richard.backend.advertisement;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.richard.backend.entity.EntityType;
 import org.richard.backend.exception.DuplicateTitleException;
 import org.richard.backend.exception.NotFoundEntityByUuid;
 import org.richard.backend.exception.TitleIsBlank;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 @Service
@@ -31,14 +33,15 @@ public class AdvertisementService {
     public AdvertisementDTO getById(UUID id) {
         return advertisementRepository.findById(id)
                 .map(advertisementMapper::toDTO)
-                .orElseThrow(() -> new NotFoundEntityByUuid("Advertisement", id.toString()));
+                .orElseThrow(() -> new NotFoundEntityByUuid(EntityType.ADVERTISEMENT.getDisplayName(Locale.getDefault()),
+                        id.toString()));
 
     }
 
     @Transactional
     public AdvertisementDTO create(AdvertisementDTO advertisementDTO) {
         if (advertisementDTO.getTitle() == null || advertisementDTO.getTitle().isBlank()) {
-            throw new TitleIsBlank("Advertisement");
+            throw new TitleIsBlank(EntityType.ADVERTISEMENT.getDisplayName(Locale.getDefault()));
         }
 
         advertisementDTO.setId(null); // because we are creating
@@ -47,7 +50,8 @@ public class AdvertisementService {
 
 
         if (advertisementRepository.existsByTitleIgnoreCase(advertisementDTO.getTitle())) {
-            throw new DuplicateTitleException("Advertisement", "Title already exists");
+            throw new DuplicateTitleException(EntityType.ADVERTISEMENT.getDisplayName(Locale.getDefault()),
+                    "Title already exists");
         }
 
         var saved = advertisementRepository.save(advertisementMapper.toEntity(advertisementDTO));
@@ -63,14 +67,15 @@ public class AdvertisementService {
         advertisementRepository.findById(id).ifPresentOrElse(existingAd -> {
             if (!existingAd.getTitle().equalsIgnoreCase(advertisementDTO.getTitle())) {
                 if (advertisementRepository.existsByTitleIgnoreCase(advertisementDTO.getTitle())) {
-                    throw new DuplicateTitleException("Advertisement", "Title already exists");
+                    throw new DuplicateTitleException(EntityType.ADVERTISEMENT.getDisplayName(Locale.getDefault()),
+                            "Title already exists");
                 }
             }
             // TODO why it is necessary?
             advertisementDTO.setId(id); // Make sure the id stays consistent
             advertisementRepository.save(advertisementMapper.updateEntityFromDTO(existingAd, advertisementDTO));
         }, () -> {
-            throw new NotFoundEntityByUuid("Advertisement", id.toString());
+            throw new NotFoundEntityByUuid(EntityType.ADVERTISEMENT.getDisplayName(Locale.getDefault()), id.toString());
         });
         // TODO  - uuid correct?
         return advertisementDTO;
@@ -80,7 +85,7 @@ public class AdvertisementService {
     @Transactional
     public void delete(UUID id) {
         if (!advertisementRepository.existsById(id)) {
-            throw new NotFoundEntityByUuid("Advertisement", id.toString());
+            throw new NotFoundEntityByUuid(EntityType.ADVERTISEMENT.getDisplayName(Locale.getDefault()), id.toString());
         }
         advertisementRepository.deleteById(id);
     }

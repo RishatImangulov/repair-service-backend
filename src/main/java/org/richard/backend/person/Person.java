@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.proxy.HibernateProxy;
 import org.richard.backend.advertisement.Advertisement;
+import org.richard.backend.clientStatus.ClientStatus;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -46,7 +47,8 @@ public class Person {
     private Advertisement advertisement;
 
     @Column(name = "client_status", nullable = false, length = 128)
-    private String clientStatus;
+    @Enumerated(EnumType.STRING)
+    private ClientStatus clientStatus;
 
     @Override
     public final boolean equals(Object o) {

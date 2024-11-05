@@ -2,11 +2,10 @@ package org.richard.backend.person;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.richard.backend.advertisement.AdvertisementDTO;
+import org.richard.backend.advertisement.Advertisement;
 import org.richard.backend.advertisement.AdvertisementRepository;
-import org.richard.backend.exception.DuplicateTitleException;
+import org.richard.backend.exception.DuplicateFullNameException;
 import org.richard.backend.exception.NotFoundEntityByUuid;
-import org.richard.backend.exception.TitleIsBlank;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -45,13 +44,14 @@ public class PersonService {
     }
 
     @Transactional
-    public PersonResponseDTO create (PersonCreateDTO personCreateDTO) {
-        var advertisement = advertisementRepository.findById(personCreateDTO.getAdvertisement())
-                .orElseThrow(() -> new NotFoundEntityByUuid("Advertisement", personCreateDTO.getAdvertisement().toString()));
+    public PersonResponseDTO create(PersonRequestDTO personRequestDTO) {
+        var advertisement = advertisementRepository.findById(personRequestDTO.getAdvertisement())
+                .orElseThrow(() ->
+                        new NotFoundEntityByUuid("Advertisement", personRequestDTO.getAdvertisement().toString()));
 
-        personCreateDTO.setFullName(formatFullName(personCreateDTO.getFullName()));
+        personRequestDTO.setFullName(formatFullName(personRequestDTO.getFullName()));
 
-        var person = personMapper.toEntity(personCreateDTO, advertisement);
+        var person = personMapper.toEntity(personRequestDTO, advertisement);
         person = personRepository.save(person);
 
         return personMapper.toResponseDTO(person);
@@ -66,41 +66,44 @@ public class PersonService {
                 .collect(Collectors.joining(" "));
     }
 
-
     @Transactional
-    public PersonResponseDTO update (UUID id , PersonCreateDTO personCreateDTO) {
+    public PersonResponseDTO update(UUID id, PersonRequestDTO personRequestDTO) {
 
+        String fullNameFormatted = formatFullName(personRequestDTO.getFullName());
+
+        Person existingPerson = personRepository.findById(id)
+                .orElseThrow(() ->
+                        new NotFoundEntityByUuid("Person", id.toString()));
+
+        advertisementRepository.findById(personRequestDTO.getAdvertisement())
+                .orElseThrow(() ->
+                        new NotFoundEntityByUuid("Advertisement", personRequestDTO.getAdvertisement().toString()));
+
+        if (!existingPerson.getFullName().equals(fullNameFormatted)) {
+            checkDuplicateFullName(fullNameFormatted);
+        }
+
+//        personRequestDTO.setId(id);
+        personRequestDTO.setFullName(fullNameFormatted);
+
+        personMapper.updateEntityFromDTO(personRequestDTO, existingPerson);
+
+        Person updatedPerson = personRepository.save(existingPerson);
+        return personMapper.toResponseDTO(updatedPerson);
     }
 
-    @Transactional
-    public AdvertisementDTO update(UUID id, AdvertisementDTO advertisementDTO) {
-
-        advertisementDTO.setTitle(advertisementDTO.getTitle().trim());
-        advertisementDTO.setDescription(advertisementDTO.getDescription().trim());
-
-        advertisementRepository.findById(id).ifPresentOrElse(existingAd -> {
-            if (!existingAd.getTitle().equalsIgnoreCase(advertisementDTO.getTitle())) {
-                if (advertisementRepository.existsByTitleIgnoreCase(advertisementDTO.getTitle())) {
-                    throw new DuplicateTitleException("Advertisement", "Title already exists");
-                }
-            }
-            // TODO why it is necessary?
-            advertisementDTO.setId(id); // Make sure the id stays consistent
-            advertisementRepository.save(advertisementMapper.updateEntityFromDTO(existingAd, advertisementDTO));
-        }, () -> {
-            throw new NotFoundEntityByUuid("Advertisement", id.toString());
-        });
-        // TODO  - uuid correct?
-        return advertisementDTO;
-
+    private void checkDuplicateFullName(String fullName) {
+        if (personRepository.existsByFullNameIgnoreCase(fullName)) {
+            throw new DuplicateFullNameException("Person", "FullName already exists");
+        }
     }
 
     @Transactional
     public void delete(UUID id) {
-        if (!advertisementRepository.existsById(id)) {
-            throw new NotFoundEntityByUuid("Advertisement", id.toString());
+        if (!personRepository.existsById(id)) {
+            throw new NotFoundEntityByUuid("Person", id.toString());
         }
-        advertisementRepository.deleteById(id);
+        personRepository.deleteById(id);
     }
 
 }
