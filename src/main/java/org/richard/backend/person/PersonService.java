@@ -51,7 +51,7 @@ public class PersonService {
 
         personRequestDTO.setFullName(formatFullName(personRequestDTO.getFullName()));
 
-        var person = personMapper.toEntity(personRequestDTO, advertisement);
+        var person = personMapper.toEntity(personRequestDTO);
         person = personRepository.save(person);
 
         return personMapper.toResponseDTO(person);

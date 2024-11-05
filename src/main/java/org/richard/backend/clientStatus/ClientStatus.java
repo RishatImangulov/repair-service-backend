@@ -20,4 +20,5 @@ public enum ClientStatus {
         ResourceBundle bundle = ResourceBundle.getBundle("ClientStatusMessages", locale);
         return bundle.getString(this.key);
     }
+
 }

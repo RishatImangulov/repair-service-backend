@@ -1,24 +1,28 @@
 package org.richard.backend.person;
 
+import lombok.RequiredArgsConstructor;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
-import org.richard.backend.advertisement.Advertisement;
-import org.richard.backend.advertisement.AdvertisementDTO;
+import org.richard.backend.advertisement.AdvertisementMapper;
 
-@Mapper(componentModel = "spring")
+import java.util.List;
+
+@Mapper(uses = { AdvertisementMapper.class }, componentModel = "spring")
 public interface PersonMapper {
-
     PersonMapper INSTANCE = Mappers.getMapper(PersonMapper.class);
 
-    @Mapping(source = "advertisement" , target = "advertisement")
-    Person toEntity(PersonRequestDTO dto, @Context Advertisement advertisement);
-
-    @Mapping(source = "advertisement.id" , target = "advertisementId")
+    @Mapping(source = "advertisement.id", target = "advertisementId")
     PersonResponseDTO toResponseDTO(Person person);
 
-    AdvertisementDTO toAdvertisementDTO(Advertisement advertisement);
+    @Mapping(source = "advertisement", target = "advertisement")
+    Person toEntity(PersonRequestDTO personRequestDTO);
+
+    @Mapping(source = "advertisement.id", target = "advertisement")
+    PersonRequestDTO toRequestDTO(Person person);
+
+//    List<Person> toEntityList(List<PersonRequestDTO> personRequestDTOList);
+    List<PersonResponseDTO> toDTOList(List<Person> personList);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateEntityFromDTO(PersonRequestDTO dto, @MappingTarget Person person);
-
+    void updateEntityFromDTO( PersonRequestDTO requestDTO, @MappingTarget Person person);
 }
