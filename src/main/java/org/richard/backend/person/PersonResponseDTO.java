@@ -2,6 +2,7 @@ package org.richard.backend.person;
 
 import lombok.Builder;
 import lombok.Value;
+import org.richard.backend.advertisement.AdvertisementDTO;
 import org.richard.backend.clientStatus.ClientStatus;
 
 import java.io.Serializable;
@@ -27,7 +28,7 @@ public class PersonResponseDTO implements Serializable {
 
     String telegram;
 
-    UUID advertisementId;
+    AdvertisementDTO advertisementDTO;
 
     ClientStatus clientStatus;
 }

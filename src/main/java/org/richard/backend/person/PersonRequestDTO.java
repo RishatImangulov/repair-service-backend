@@ -6,10 +6,10 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
+import org.richard.backend.advertisement.AdvertisementDTO;
 import org.richard.backend.clientStatus.ClientStatus;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 /**
  * DTO for {@link Person}
@@ -49,7 +49,7 @@ public class PersonRequestDTO implements Serializable {
     String telegram;
 
     @NotNull
-    UUID advertisement;
+    AdvertisementDTO advertisementDTO;
 
     @NotNull
     @Size(max = 128)
