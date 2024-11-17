@@ -1,15 +1,21 @@
 package org.richard.backend.advertisement;
 
+
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.richard.backend.advertisement.Advertisement;
-import org.richard.backend.advertisement.AdvertisementDTO;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.extensions.spring.DelegatingConverter;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.lang.NonNull;
 
-@Mapper
-public interface AdvertisementMapper {
+@Mapper(componentModel = "spring")
+public interface AdvertisementMapper extends Converter<Advertisement, AdvertisementDTO> {
 
-    AdvertisementDTO toDTO(Advertisement advertisement);
+    AdvertisementDTO convert(Advertisement advertisement);
 
-    Advertisement toEntity(AdvertisementDTO advertisementDTO);
-
+    @InheritInverseConfiguration
+    @DelegatingConverter
+    Advertisement invertConvert(AdvertisementDTO advertisementDTO);
+// TODO useless method...
+    void updateEntityFromDTO(@NonNull AdvertisementDTO dto, @MappingTarget Advertisement entity);
 }

@@ -2,6 +2,7 @@
 package org.richard.backend.advertisement;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +40,7 @@ public class AdvertisementController {
     }
 
     @PostMapping
-    public ResponseEntity<AdvertisementDTO> create(@Valid @RequestBody AdvertisementDTO advertisementDTO) {
+    public ResponseEntity<AdvertisementDTO> create(@Valid @NotNull @RequestBody AdvertisementDTO advertisementDTO) {
         var newAd = advertisementService.create(advertisementDTO);
         var location = ServletUriComponentsBuilder
                 .fromCurrentRequest()

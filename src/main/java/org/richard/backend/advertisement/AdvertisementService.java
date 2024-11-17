@@ -6,10 +6,12 @@ import org.richard.backend.entity.EntityName;
 import org.richard.backend.exception.DuplicateTitleException;
 import org.richard.backend.exception.NotFoundEntityByUuid;
 import org.richard.backend.exception.TitleIsBlank;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -17,22 +19,28 @@ import java.util.UUID;
 public class AdvertisementService {
 
     private final AdvertisementRepository advertisementRepository;
-    private final AdvertisementMapper advertisementMapper;
+    //    private final AdvertisementMapper advertisementMapper;
+    private final ConversionService conversionService;
 
     public List<AdvertisementDTO> getAll() {
-        return advertisementMapper.toDTOList(
-                advertisementRepository.findAll());
+        return advertisementRepository.findAll()
+                .stream()
+                .map(adv -> conversionService.convert(adv, AdvertisementDTO.class))
+                .toList();
     }
 
     // should I check blank fragment?
     public List<AdvertisementDTO> findAllByTitleFragment(String titleFragment) {
-        return advertisementMapper.toDTOList(
-                advertisementRepository.findByTitleContainingIgnoreCase(titleFragment));
+        return
+                advertisementRepository.findByTitleContainingIgnoreCase(titleFragment)
+                        .stream()
+                        .map(avd -> conversionService.convert(avd, AdvertisementDTO.class))
+                        .toList();
     }
 
     public AdvertisementDTO getById(UUID id) {
         return advertisementRepository.findById(id)
-                .map(advertisementMapper::toDTO)
+                .map(adv -> conversionService.convert(adv, AdvertisementDTO.class))
                 .orElseThrow(() -> new NotFoundEntityByUuid(EntityName.ADVERTISEMENT.getDisplayName(Locale.getDefault()),
                         id.toString()));
 
@@ -40,6 +48,7 @@ public class AdvertisementService {
 
     @Transactional
     public AdvertisementDTO create(AdvertisementDTO advertisementDTO) {
+
         if (advertisementDTO.getTitle() == null || advertisementDTO.getTitle().isBlank()) {
             throw new TitleIsBlank(EntityName.ADVERTISEMENT.getDisplayName(Locale.getDefault()));
         }
@@ -54,11 +63,14 @@ public class AdvertisementService {
                     Locale.forLanguageTag("ru"));
         }
 
-        var saved = advertisementRepository.save(advertisementMapper.toEntity(advertisementDTO));
-        return advertisementMapper.toDTO(saved);
+        var saved = advertisementRepository.save(
+                Objects.requireNonNull(conversionService.convert(advertisementDTO, Advertisement.class),
+                        "Conversion failed: advertisementDTO could not be converted to Advertisement"));
+        return conversionService.convert(saved, AdvertisementDTO.class);
     }
 
     @Transactional
+    // TODO i need to return some thing?  cause i already have needed DTO in front..
     public AdvertisementDTO update(UUID id, AdvertisementDTO advertisementDTO) {
 
         advertisementDTO.setTitle(advertisementDTO.getTitle().trim());
@@ -73,8 +85,13 @@ public class AdvertisementService {
             }
             // TODO why it is necessary?
             advertisementDTO.setId(id); // Make sure the id stays consistent
-            advertisementMapper.updateEntityFromDTO(advertisementDTO, existingAd);
-            advertisementRepository.save(existingAd);
+//            conversionService.updateEntityFromDTO(advertisementDTO, existingAd);
+
+            advertisementRepository.save(Advertisement.builder()
+                    .id(id)
+                    .title(advertisementDTO.getTitle())
+                    .description(advertisementDTO.getDescription())
+                    .build());
         }, () -> {
             throw new NotFoundEntityByUuid(EntityName.ADVERTISEMENT.getDisplayName(Locale.getDefault()), id.toString());
         });

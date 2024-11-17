@@ -37,6 +37,10 @@ dependencies {
 
     annotationProcessor 'org.projectlombok:lombok'
 
+    implementation 'org.mapstruct.extensions.spring:mapstruct-spring-annotations:1.1.1'
+    annotationProcessor 'org.mapstruct.extensions.spring:mapstruct-spring-test-extensions:1.1.1'
+    testAnnotationProcessor 'org.mapstruct.extensions.spring:mapstruct-spring-test-extensions:1.1.1'
+
     implementation 'org.mapstruct:mapstruct:1.5.5.Final'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
     testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
