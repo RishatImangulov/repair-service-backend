@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
+import java.util.Random;
 import java.util.UUID;
 
 @Service
@@ -41,8 +41,9 @@ public class AdvertisementService {
     public AdvertisementDTO getById(UUID id) {
         return advertisementRepository.findById(id)
                 .map(adv -> conversionService.convert(adv, AdvertisementDTO.class))
-                .orElseThrow(() -> new NotFoundEntityByUuid(EntityName.ADVERTISEMENT.getDisplayName(Locale.getDefault()),
-                        id.toString()));
+                .orElseThrow(() ->
+                        new NotFoundEntityByUuid(EntityName.ADVERTISEMENT.getDisplayName(Locale.getDefault()),
+                                id.toString()));
 
     }
 
@@ -63,14 +64,18 @@ public class AdvertisementService {
                     Locale.forLanguageTag("ru"));
         }
 
-        var saved = advertisementRepository.save(
-                Objects.requireNonNull(conversionService.convert(advertisementDTO, Advertisement.class),
-                        "Conversion failed: advertisementDTO could not be converted to Advertisement"));
+        var entity = Advertisement.builder()
+                .id(UUID.randomUUID()) // TODO what?
+                .title(advertisementDTO.getTitle())
+                .description(advertisementDTO.getDescription())
+                .build();
+        var saved = advertisementRepository.save(entity);
+
         return conversionService.convert(saved, AdvertisementDTO.class);
     }
 
     @Transactional
-    // TODO i need to return some thing?  cause i already have needed DTO in front..
+    // TODO i need to return something?  cause i already have needed DTO in front..
     public AdvertisementDTO update(UUID id, AdvertisementDTO advertisementDTO) {
 
         advertisementDTO.setTitle(advertisementDTO.getTitle().trim());
